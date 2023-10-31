@@ -1,0 +1,658 @@
+library(readxl)
+BRPT1<-read_excel("D:/KULIAH/MATERI KULIAH/materi kulon/skripsi/bismillah/data2/BRPT1.xlsx")
+ICBP1<-read_excel("D:/KULIAH/MATERI KULIAH/materi kulon/skripsi/bismillah/data2/ICBP1.xlsx")
+BRPT2<-read_excel("D:/KULIAH/MATERI KULIAH/materi kulon/skripsi/bismillah/data2/BRPT2.xlsx")
+ICBP2<-read_excel("D:/KULIAH/MATERI KULIAH/materi kulon/skripsi/bismillah/data2/ICBP2.xlsx")
+
+library(tseries)
+library(forecast)
+BRPTts1<-as.ts(BRPT1[,3],start=c(2017),frequency=365)
+ICBPts1<-as.ts(ICBP1[,3],start=c(2017),frequency=365)
+BRPTts2<-as.ts(BRPT2$Return[1:734],start=c(2020),frequency=365)
+ICBPts2<-as.ts(ICBP2$Return[1:734],start=c(2020),frequency=365)
+
+#Stationarity Test
+BoxCox.lambda(BRPT1[,3])
+BoxCox.lambda(ICBP1[,3])
+BoxCox.lambda(BRPT2$Return[1:734])
+BoxCox.lambda(ICBP2$Return[1:734])
+
+#Stationarity Test
+adf.test(BRPTts1)
+adf.test(ICBPts1)
+adf.test(BRPTts2)
+adf.test(ICBPts2)
+
+#Model Identification using ACF & PACF
+par(mfrow=c(1,1))
+acf(BRPTts1,lag.max =24,main="ACF Return of BRPT Sebelum Covid 19 Masuk")
+acf(ICBPts1,lag.max =24,main="ACF Return of ICBP Sebelum Covid 19 Masuk")
+acf(BRPTts2,lag.max =24,main="ACF Return of BRPT Setelah Covid 19 Masuk")
+acf(ICBPts2,lag.max =24,main="ACF Return of ICBP Setelah Covid 19 Masuk")
+pacf(BRPTts1,lag.max =24,main="PACF Return of BRPT Sebelum Covid 19 Masuk")
+pacf(ICBPts1,lag.max =24,main="PACF Return of ICBP Sebelum Covid 19 Masuk")
+pacf(BRPTts2,lag.max =24,main="PACF Return of BRPT Setelah Covid 19 Masuk")
+pacf(ICBPts2,lag.max =24,main="PACF Return of ICBP Setelah Covid 19 Masuk")
+
+#ARMA Model
+#BRPT1
+armab1.1<-arima(BRPTts1,order = c(1,0,0))
+armab1.2<-arima(BRPTts1,order = c(0,0,1)) 
+armab1.3<-arima(BRPTts1,order = c(1,0,1))
+#BRPT2
+armab2.1<-arima(BRPTts2,order = c(1,0,0))
+armab2.2<-arima(BRPTts2,order = c(0,0,1))
+armab2.3<-arima(BRPTts2,order = c(1,0,1))
+armab2.4<-arima(BRPTts2,order = c(1,0,2))
+armab2.5<-arima(BRPTts2,order = c(1,0,3))
+armab2.6<-arima(BRPTts2,order = c(1,0,4))
+armab2.7<-arima(BRPTts2,order = c(2,0,0))
+armab2.8<-arima(BRPTts2,order = c(0,0,2))
+armab2.9<-arima(BRPTts2,order = c(2,0,1))
+armab2.10<-arima(BRPTts2,order = c(2,0,2))
+armab2.11<-arima(BRPTts2,order = c(2,0,3))
+armab2.12<-arima(BRPTts2,order = c(2,0,4))
+armab2.13<-arima(BRPTts2,order = c(3,0,0))
+armab2.14<-arima(BRPTts2,order = c(0,0,3))
+armab2.15<-arima(BRPTts2,order = c(3,0,1))
+armab2.16<-arima(BRPTts2,order = c(3,0,2))
+armab2.17<-arima(BRPTts2,order = c(3,0,3))
+armab2.18<-arima(BRPTts2,order = c(3,0,4))
+#ICBP1
+armai1.1<-arima(ICBPts1,order = c(1,0,0))
+armai1.2<-arima(ICBPts1,order = c(0,0,1))
+armai1.3<-arima(ICBPts1,order = c(1,0,1))
+armai1.4<-arima(ICBPts1,order = c(2,0,0))
+armai1.5<-arima(ICBPts1,order = c(2,0,1))
+#ICBP2
+armai2.1<-arima(ICBPts2,order = c(1,0,0))
+armai2.2<-arima(ICBPts2,order = c(0,0,1))
+armai2.3<-arima(ICBPts2,order = c(1,0,1))
+armai2.4<-arima(ICBPts2,order = c(1,0,2))
+armai2.5<-arima(ICBPts2,order = c(1,0,3))
+armai2.6<-arima(ICBPts2,order = c(1,0,4))
+armai2.7<-arima(ICBPts2,order = c(1,0,5))
+armai2.8<-arima(ICBPts2,order = c(1,0,6))
+armai2.9<-arima(ICBPts2,order = c(1,0,7))
+armai2.10<-arima(ICBPts2,order = c(1,0,8))
+armai2.11<-arima(ICBPts2,order = c(1,0,9))
+
+#Residual ARMA Model
+#BRPT1
+resarmab1.1<-armab1.1$residuals
+resarmab1.2<-armab1.2$residuals
+resarmab1.3<-armab1.3$residuals
+#BRPT2
+resarmab2.1<-armab2.1$residuals
+resarmab2.2<-armab2.2$residuals
+resarmab2.3<-armab2.3$residuals
+resarmab2.4<-armab2.4$residuals
+resarmab2.5<-armab2.5$residuals
+resarmab2.6<-armab2.6$residuals
+resarmab2.7<-armab2.7$residuals
+resarmab2.8<-armab2.8$residuals
+resarmab2.9<-armab2.9$residuals
+resarmab2.10<-armab2.10$residuals
+resarmab2.11<-armab2.11$residuals
+resarmab2.12<-armab2.12$residuals
+resarmab2.13<-armab2.13$residuals
+resarmab2.14<-armab2.14$residuals
+resarmab2.15<-armab2.15$residuals
+resarmab2.16<-armab2.16$residuals
+resarmab2.17<-armab2.17$residuals
+resarmab2.18<-armab2.18$residuals
+#ICBP1
+resarmai1.1<-armai1.1$residuals
+resarmai1.2<-armai1.2$residuals
+resarmai1.3<-armai1.3$residuals
+resarmai1.4<-armai1.4$residuals
+resarmai1.5<-armai1.5$residuals
+#ICBP2
+resarmai2.1<-armai2.1$residuals
+resarmai2.2<-armai2.2$residuals
+resarmai2.3<-armai2.3$residuals
+resarmai2.4<-armai2.4$residuals
+resarmai2.5<-armai2.5$residuals
+resarmai2.6<-armai2.6$residuals
+resarmai2.7<-armai2.7$residuals
+resarmai2.8<-armai2.8$residuals
+resarmai2.9<-armai2.9$residuals
+resarmai2.10<-armai2.10$residuals
+resarmai2.11<-armai2.11$residuals
+
+#White noise detection
+#BRPT1
+wnb1.1<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmab1.1,lag=i,type = "Ljung-Box")
+  wnb1.1[i,1]<-white.noise$statistic
+  wnb1.1[i,2]<-white.noise$p.value
+}
+wnb1.1
+wnb1.2<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmab1.2,lag=i,type = "Ljung-Box")
+  wnb1.2[i,1]<-white.noise$statistic
+  wnb1.2[i,2]<-white.noise$p.value
+}
+wnb1.2
+wnb1.3<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmab1.3,lag=i,type = "Ljung-Box")
+  wnb1.3[i,1]<-white.noise$statistic
+  wnb1.3[i,2]<-white.noise$p.value
+}
+wnb1.3
+#BRPT2
+wnb2.1<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmab2.1,lag=i,type = "Ljung-Box")
+  wnb2.1[i,1]<-white.noise$statistic
+  wnb2.1[i,2]<-white.noise$p.value
+}
+wnb2.1
+wnb2.2<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmab2.2,lag=i,type = "Ljung-Box")
+  wnb2.2[i,1]<-white.noise$statistic
+  wnb2.2[i,2]<-white.noise$p.value
+}
+wnb2.2
+wnb2.3<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmab2.3,lag=i,type = "Ljung-Box")
+  wnb2.3[i,1]<-white.noise$statistic
+  wnb2.3[i,2]<-white.noise$p.value
+}
+wnb2.3
+wnb2.4<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmab2.4,lag=i,type = "Ljung-Box")
+  wnb2.4[i,1]<-white.noise$statistic
+  wnb2.4[i,2]<-white.noise$p.value
+}
+wnb2.4
+wnb2.5<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmab2.5,lag=i,type = "Ljung-Box")
+  wnb2.5[i,1]<-white.noise$statistic
+  wnb2.5[i,2]<-white.noise$p.value
+}
+wnb2.5
+wnb2.6<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmab2.6,lag=i,type = "Ljung-Box")
+  wnb2.6[i,1]<-white.noise$statistic
+  wnb2.6[i,2]<-white.noise$p.value
+}
+wnb2.6
+wnb2.7<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmab2.7,lag=i,type = "Ljung-Box")
+  wnb2.7[i,1]<-white.noise$statistic
+  wnb2.7[i,2]<-white.noise$p.value
+}
+wnb2.7
+wnb2.8<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmab2.8,lag=i,type = "Ljung-Box")
+  wnb2.8[i,1]<-white.noise$statistic
+  wnb2.8[i,2]<-white.noise$p.value
+}
+wnb2.8
+wnb2.9<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmab2.9,lag=i,type = "Ljung-Box")
+  wnb2.9[i,1]<-white.noise$statistic
+  wnb2.9[i,2]<-white.noise$p.value
+}
+wnb2.9
+wnb2.10<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmab2.10,lag=i,type = "Ljung-Box")
+  wnb2.10[i,1]<-white.noise$statistic
+  wnb2.10[i,2]<-white.noise$p.value
+}
+wnb2.10
+wnb2.11<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmab2.11,lag=i,type = "Ljung-Box")
+  wnb2.11[i,1]<-white.noise$statistic
+  wnb2.11[i,2]<-white.noise$p.value
+}
+wnb2.11
+wnb2.12<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmab2.12,lag=i,type = "Ljung-Box")
+  wnb2.12[i,1]<-white.noise$statistic
+  wnb2.12[i,2]<-white.noise$p.value
+}
+wnb2.12
+wnb2.13<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmab2.13,lag=i,type = "Ljung-Box")
+  wnb2.13[i,1]<-white.noise$statistic
+  wnb2.13[i,2]<-white.noise$p.value
+}
+wnb2.13
+wnb2.14<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmab2.14,lag=i,type = "Ljung-Box")
+  wnb2.14[i,1]<-white.noise$statistic
+  wnb2.14[i,2]<-white.noise$p.value
+}
+wnb2.14
+wnb2.15<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmab2.15,lag=i,type = "Ljung-Box")
+  wnb2.15[i,1]<-white.noise$statistic
+  wnb2.15[i,2]<-white.noise$p.value
+}
+wnb2.15
+wnb2.16<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmab2.16,lag=i,type = "Ljung-Box")
+  wnb2.16[i,1]<-white.noise$statistic
+  wnb2.16[i,2]<-white.noise$p.value
+}
+wnb2.16
+wnb2.17<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmab2.17,lag=i,type = "Ljung-Box")
+  wnb2.17[i,1]<-white.noise$statistic
+  wnb2.17[i,2]<-white.noise$p.value
+}
+wnb2.17
+wnb2.18<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmab2.18,lag=i,type = "Ljung-Box")
+  wnb2.18[i,1]<-white.noise$statistic
+  wnb2.18[i,2]<-white.noise$p.value
+}
+wnb2.18
+
+#ICBP1
+wni1.1<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmai1.1,lag=i,type = "Ljung-Box")
+  wni1.1[i,1]<-white.noise$statistic
+  wni1.1[i,2]<-white.noise$p.value
+}
+wni1.1
+wni1.2<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmai1.2,lag=i,type = "Ljung-Box")
+  wni1.2[i,1]<-white.noise$statistic
+  wni1.2[i,2]<-white.noise$p.value
+}
+wni1.2
+wni1.3<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmai1.3,lag=i,type = "Ljung-Box")
+  wni1.3[i,1]<-white.noise$statistic
+  wni1.3[i,2]<-white.noise$p.value
+}
+wni1.3
+wni1.4<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmai1.4,lag=i,type = "Ljung-Box")
+  wni1.4[i,1]<-white.noise$statistic
+  wni1.4[i,2]<-white.noise$p.value
+}
+wni1.4
+wni1.5<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmai1.5,lag=i,type = "Ljung-Box")
+  wni1.5[i,1]<-white.noise$statistic
+  wni1.5[i,2]<-white.noise$p.value
+}
+wni1.5
+
+#ICBP2
+wni2.1<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmai2.1,lag=i,type = "Ljung-Box")
+  wni2.1[i,1]<-white.noise$statistic
+  wni2.1[i,2]<-white.noise$p.value
+}
+wni2.1
+wni2.2<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmai2.2,lag=i,type = "Ljung-Box")
+  wni2.2[i,1]<-white.noise$statistic
+  wni2.2[i,2]<-white.noise$p.value
+}
+wni2.2
+wni2.3<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmai2.3,lag=i,type = "Ljung-Box")
+  wni2.3[i,1]<-white.noise$statistic
+  wni2.3[i,2]<-white.noise$p.value
+}
+wni2.3
+wni2.4<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmai2.4,lag=i,type = "Ljung-Box")
+  wni2.4[i,1]<-white.noise$statistic
+  wni2.4[i,2]<-white.noise$p.value
+}
+wni2.4
+wni2.5<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmai2.5,lag=i,type = "Ljung-Box")
+  wni2.5[i,1]<-white.noise$statistic
+  wni2.5[i,2]<-white.noise$p.value
+}
+wni2.5
+wni2.6<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmai2.6,lag=i,type = "Ljung-Box")
+  wni2.6[i,1]<-white.noise$statistic
+  wni2.6[i,2]<-white.noise$p.value
+}
+wni2.6
+wni2.7<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmai2.7,lag=i,type = "Ljung-Box")
+  wni2.7[i,1]<-white.noise$statistic
+  wni2.7[i,2]<-white.noise$p.value
+}
+wni2.7
+wni2.8<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmai2.8,lag=i,type = "Ljung-Box")
+  wni2.8[i,1]<-white.noise$statistic
+  wni2.8[i,2]<-white.noise$p.value
+}
+wni2.8
+wni2.9<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmai2.9,lag=i,type = "Ljung-Box")
+  wni2.9[i,1]<-white.noise$statistic
+  wni2.9[i,2]<-white.noise$p.value
+}
+wni2.9
+wni2.10<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmai2.10,lag=i,type = "Ljung-Box")
+  wni2.10[i,1]<-white.noise$statistic
+  wni2.10[i,2]<-white.noise$p.value
+}
+wni2.10
+wni2.11<-matrix(0,7,2)
+for (i in 1:7){
+  white.noise<-Box.test(resarmai2.11,lag=i,type = "Ljung-Box")
+  wni2.11[i,1]<-white.noise$statistic
+  wni2.11[i,2]<-white.noise$p.value
+}
+wni2.11
+
+#Normality Test of Residual
+#BRPT1
+jarque.bera.test(resarmab1.1)
+jarque.bera.test(resarmab1.2)
+jarque.bera.test(resarmab1.3)
+
+#BRPT2
+jarque.bera.test(resarmab2.1)
+jarque.bera.test(resarmab2.2)
+jarque.bera.test(resarmab2.3)
+jarque.bera.test(resarmab2.4)
+jarque.bera.test(resarmab2.5)
+jarque.bera.test(resarmab2.6)
+jarque.bera.test(resarmab2.7)
+jarque.bera.test(resarmab2.8)
+jarque.bera.test(resarmab2.9)
+jarque.bera.test(resarmab2.10)
+jarque.bera.test(resarmab2.11)
+jarque.bera.test(resarmab2.12)
+jarque.bera.test(resarmab2.13)
+jarque.bera.test(resarmab2.14)
+jarque.bera.test(resarmab2.15)
+jarque.bera.test(resarmab2.16)
+jarque.bera.test(resarmab2.17)
+jarque.bera.test(resarmab2.18)
+
+#ICBP1
+jarque.bera.test(resarmai1.1)
+jarque.bera.test(resarmai1.2)
+jarque.bera.test(resarmai1.3)
+jarque.bera.test(resarmai1.4)
+jarque.bera.test(resarmai1.5)
+
+#ICBP2
+jarque.bera.test(resarmai2.1)
+jarque.bera.test(resarmai2.2)
+jarque.bera.test(resarmai2.3)
+jarque.bera.test(resarmai2.4)
+jarque.bera.test(resarmai2.5)
+jarque.bera.test(resarmai2.6)
+jarque.bera.test(resarmai2.7)
+jarque.bera.test(resarmai2.8)
+jarque.bera.test(resarmai2.9)
+jarque.bera.test(resarmai2.10)
+jarque.bera.test(resarmai2.11)
+
+#choosing The Best ARMA Model
+#BRPT1
+AIC(armab1.1)
+AIC(armab1.2)
+AIC(armab1.3)
+
+#BRPT2
+AIC(armab2.1)
+AIC(armab2.2)
+AIC(armab2.3)
+AIC(armab2.4)
+AIC(armab2.5)
+AIC(armab2.6)
+AIC(armab2.7)
+AIC(armab2.8)
+AIC(armab2.9)
+AIC(armab2.10)
+AIC(armab2.11)
+AIC(armab2.12)
+AIC(armab2.13)
+AIC(armab2.14)
+AIC(armab2.15)
+AIC(armab2.16)
+AIC(armab2.17)
+AIC(armab2.18)
+
+#ICBP1
+AIC(armai1.1)
+AIC(armai1.2)
+AIC(armai1.3)
+AIC(armai1.4)
+AIC(armai1.5)
+
+#ICBP2
+AIC(armai2.1)
+AIC(armai2.2)
+AIC(armai2.3)
+AIC(armai2.4)
+AIC(armai2.5)
+AIC(armai2.6)
+AIC(armai2.7)
+AIC(armai2.8)
+AIC(armai2.9)
+AIC(armai2.10)
+AIC(armai2.11)
+
+#The Best ARMA Model
+arma.BRPT1<-arima(BRPTts1,order=c(1,0,0))
+arma.BRPT2<-arima(BRPTts2,order=c(3,0,3))
+arma.ICBP1<-arima(ICBPts1,order=c(1,0,1))
+arma.ICBP2<-arima(ICBPts2,order=c(1,0,1))
+#Residual The Best ARMA Model
+res.arma.brpt1<-arma.BRPT1$residuals
+res.arma.brpt2<-arma.BRPT2$residuals
+res.arma.icbp1<-arma.ICBP1$residuals
+res.arma.icbp2<-arma.ICBP2$residuals
+
+#Heteroskedasticity Test
+library(FinTS)
+ArchTest(res.arma.brpt1,lags = 7)
+ArchTest(res.arma.brpt2,lags = 7)
+ArchTest(res.arma.icbp1,lags = 7)
+ArchTest(res.arma.icbp2,lags = 7)
+
+#GARCH Model
+library(rugarch)
+library(fGarch)
+#BRPT1
+specgarch.BRPT1<-ugarchspec(variance.model = list(model="sGARCH",garchOrder=c(1,1)),mean.model = list(armaOrder=c(1,0),include.mean=F),distribution.model="snorm")
+garch.BRPT1<-ugarchfit(specgarch.BRPT1,data=BRPT1$Return)
+garch.BRPT1
+#BRPT2
+specgarch.BRPT2<-ugarchspec(variance.model = list(model="sGARCH",garchOrder=c(1,1)),mean.model = list(armaOrder=c(3,3),include.mean=F),distribution.model="snorm")
+garch.BRPT2<-ugarchfit(specgarch.BRPT2,data=BRPT2$Return[1:734])
+garch.BRPT2
+#ICBP1
+specgarch.ICBP1<-ugarchspec(variance.model = list(model="eGARCH",garchOrder=c(1,1)),mean.model = list(armaOrder=c(1,1),include.mean=F),distribution.model="snorm")
+garch.ICBP1<-ugarchfit(specgarch.ICBP1,data=ICBP1$Return)
+garch.ICBP1
+#ICBP2
+specgarch.ICBP2<-ugarchspec(variance.model = list(model="sGARCH",garchOrder=c(1,1)),mean.model = list(armaOrder=c(1,1),include.mean=F),distribution.model="snorm")
+garch.ICBP2<-ugarchfit(specgarch.ICBP2,data=ICBP2$Return[1:734])
+garch.ICBP2
+
+#Normality Test of residual Garch
+library(readxl)
+res.garch1<-read_excel("D:/KULIAH/MATERI KULIAH/materi kulon/skripsi/bismillah/data2/resG1.xlsx")
+res.garch2<-read_excel("D:/KULIAH/MATERI KULIAH/materi kulon/skripsi/bismillah/data2/resG2.xlsx")
+resG1<-as.matrix(res.garch1)
+resG2<-as.matrix(res.garch2)
+
+#Normality test of Residual GARCH
+jarque.bera.test(res.garch1$res.brpt1)
+jarque.bera.test(res.garch2$res.brpt2)
+jarque.bera.test(res.garch1$res.icbp1)
+jarque.bera.test(res.garch2$res.icbp2)
+
+#Dependency Measure
+library(copula)
+library(QRM)
+ro.kendall1<-Kendall(resG1)
+ro.kendall1<-ro.kendall1[1,2]
+ro.kendall1
+ro.kendall2<-Kendall(resG2)
+ro.kendall2<-ro.kendall2[1,2]
+ro.kendall2
+
+#Uniform Transformation
+pseudo1<-cbind(pobs(res.garch1$res.brpt1),pobs(res.garch1$res.icbp1))
+pseudo2<-cbind(pobs(res.garch2$res.brpt2),pobs(res.garch2$res.icbp2))
+plot(pseudo2[,1],pseudo2[,2],xlab="BRPT saat Cov-19",ylab="ICBP saat Cov-19",col="blue")
+#Copula
+#Fit Copula
+#Sebelum Covid19
+#Copula Gumbel
+parGumbel1<-1/(1-ro.kendall1)
+gumbel<-gumbelCopula(parGumbel1,dim=2)
+fitgumbel1<-fitCopula(gumbel,pseudo1,method="ml")
+gumbel.copula1<-gumbelCopula(fitgumbel1@estimate,dim = 2)
+summary(fitgumbel1)
+#Copula Clayton
+parClayton1<-(2*ro.kendall1)/(1-ro.kendall1)
+clayton<-claytonCopula(parClayton1,dim=2)
+fitclayton1<-fitCopula(clayton,pseudo1,method="ml")
+clayton.copula1<-claytonCopula(fitclayton1@estimate,dim = 2)
+summary(fitclayton1)
+#Copula Frank
+frank<-frankCopula(param = NA_real_,dim=2)
+fitfrank1<-fitCopula(frank,pseudo1,method="ml")
+frank.copula1<-frankCopula(fitfrank1@estimate,dim = 2)
+summary(fitfrank1)
+
+#Saat Covid19
+#Copula Gumbel
+parGumbel2<-1/(1-ro.kendall2)
+gumbel2<-gumbelCopula(parGumbel2,dim=2)
+fitgumbel2<-fitCopula(gumbel2,pseudo2,method="ml")
+gumbel.copula2<-gumbelCopula(fitgumbel2@estimate,dim = 2)
+summary(fitgumbel2)
+#Copula Clayton
+parClayton2<-(2*ro.kendall2)/(1-ro.kendall2)
+clayton2<-claytonCopula(parClayton2,dim=2)
+fitclayton2<-fitCopula(clayton2,pseudo2,method="ml")
+clayton.copula2<-claytonCopula(fitclayton2@estimate,dim = 2)
+summary(fitclayton2)
+#Copula Frank
+frank2<-frankCopula(param = NA_real_,dim=2)
+fitfrank2<-fitCopula(frank2,pseudo2,method="ml")
+frank.copula2<-frankCopula(fitfrank2@estimate,dim = 2)
+summary(fitfrank2)
+
+#Copula Model Sebelum Covid 19
+n<-815
+Rfrank1<-rCopula(n,frank.copula1)
+resG1.a<-as.matrix(res.garch1$res.brpt1)
+resG1.b<-as.matrix(res.garch1$res.icbp1)
+r<-100
+N=815-r
+a<-matrix(0,r,N)
+b<-matrix(0,r,N)
+VaRf1<-matrix(0,r,1)
+for(i in 1:r){
+  t=1+i
+  u=N+i
+  a[i,]=resG1.a[t:u]
+  b[i,]=resG1.b[t:u]
+  sim.valF.BRPT1<-quantile(a[i,],Rfrank1[,1])
+  sim.valF.icbp1<-quantile(b[i,],Rfrank1[,2])
+  RetF.p1<-(0.25*sim.valF.BRPT1)+(0.75*sim.valF.icbp1)
+  RetF.p1<-as.matrix(RetF.p1)
+  VaRf1[i]<-quantile(RetF.p1,0.05)
+}
+mean(VaRf1)
+VaRf1<-abs(VaRf1)
+RetF.p1<-abs(RetF.p1)
+a<-exception(VaRf1,RetF.p1)
+LRuc(a,0.05)
+
+#Copula Model Saat Covid 19
+n<-734
+Rclayton2<-rCopula(n,clayton.copula2)
+resG2.a<-res.garch2$res.brpt2
+resG2.b<-res.garch2$res.icbp2
+N=734-100
+r<-100
+a<-matrix(0,r,N)
+b<-matrix(0,r,N)
+VaRC2<-matrix(0,r,1)
+for(i in 1:r){
+  t=1+i
+  u=N+i
+  a[i,]=resG2.a[t:u]
+  b[i,]=resG2.b[t:u]
+  sim.valC.BRPT2<-quantile(a[i,],Rclayton2[,1])
+  sim.valC.icbp2<-quantile(b[i,],Rclayton2[,2])
+  RetC.p2<-(0.1*sim.valC.BRPT2)+(0.9*sim.valC.icbp2)
+  RetC.p2<-as.matrix(RetC.p2)
+  VaRC2[i]<-quantile(RetC.p2,0.05)
+}
+mean(VaRC2)
+VaRC2<-abs(VaRC2)
+RetC.p2<-abs(RetC.p2)
+a<-exception(VaRC2,RetC.p2)
+LRuc(a,0.05)
+#Backtesting
+#Backtesting VaR Copula Gumbel sebelum covid
+exception<-function(VaR,returns){
+  output<-vector(mode = "numeric",length = length(VaR))
+  for(i in seq(length(VaR))){
+    if(returns[i]>VaR[i]){
+      output[i]=returns[i]
+    }
+  }
+  return(output)
+}
+LRuc<-function(except,alpha){
+  n<-length(except)
+  m<-sum(except!=0)
+  LR = 2 * log  ((1 - m/n)^(n - m) * (m/n)^m) - 2 * log((1 - alpha)^(n - m) * alpha^m)  
+  
+  return (LR)
+}
+
